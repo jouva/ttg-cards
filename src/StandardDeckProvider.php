@@ -1,16 +1,15 @@
 <?php
 
-namespace Fust\Cards;
+namespace Jouva\TTGCards;
 
-use Fust\Cards\Contracts\CardProvider;
+use Jouva\TTGCards\Contracts\CardProvider;
 
 /**
  * The standards cards in a 52 card deck
  */
 class StandardDeckProvider implements CardProvider
 {
-    
-    public function getCards()
+    public function getCards(): array
     {
         $cards = [];
 
@@ -23,7 +22,7 @@ class StandardDeckProvider implements CardProvider
         return $cards;
     }
 
-    private function addCards(&$cards, $suit)
+    private function addCards(&$cards, Suit $suit): void
     {
         $values = range(2, 10);
         $values[] = Card::ACE;

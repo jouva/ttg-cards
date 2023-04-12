@@ -1,12 +1,12 @@
-#Cards. Build a Card game in minutes. 
+# ttg-cards. Flexible Tabletop Card library for PHP
 
-A standard 52-card deck is provided by default, but one can customize to build any deck needed. Create Bridge, BlackJack, Pocker and more...
+A standard 52-card deck is provided by default, but one can customize to build any deck needed. Create Bridge, BlackJack, Poker and more...
 
 ## Installation
 
 Pull in the package through Composer.
 
-Run `composer require fust/cards`
+Run `composer require jouva/ttg-cards`
 
 
 ## Usage
@@ -49,9 +49,9 @@ $deck->shuffle();
 To customise the deck of cards (i.e. which cards are part of the deck) one can implement the CardProvider interface
 
 ```php
-class MyGameDeckProvider implements CardProvider{
+class MyGameDeckProvider implements CardProvider {
     
-    public function getCards(){
+    public function getCards(): array {
 
         //return an array of card for MyGame 
 	}
@@ -62,13 +62,7 @@ $deck = new Deck(new MyGameDeckProvider);
 You may also want to look at:
 
 - `Shuffleable` for shuffling the cards
-- `CardProvider` for providig cards to the deck
+- `CardProvider` for providing cards to the deck
 
 
-**The current implementation doen't let putting cards back into the deck after drawing them. Shuffle resets the deck**
-
-
-
-
-
-
+**The current implementation doesn't let putting cards back into the deck after drawing them. Shuffle resets the deck**

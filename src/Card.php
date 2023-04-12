@@ -1,6 +1,8 @@
 <?php
 
-namespace Fust\Cards;
+namespace Jouva\TTGCards;
+
+use InvalidArgumentException;
 
 /**
  * A card
@@ -10,43 +12,39 @@ namespace Fust\Cards;
  */
 class Card
 {
+    const ACE = 100;
+    const JACK = 101;
+    const QUEEN = 102;
+    const KING = 103;
 
-    const ACE    = 100;
-    const JACK   = 101;
-    const QUEEN  = 102;
-    const KING   = 103;
+    /**
+     * The suit of this card
+     * @var Suit
+     */
+    protected Suit $suit;
 
-        /**
-         * The suit of this card
-         * @var Suit
-         */
-        protected $suit;
+    /**
+     * Face value
+     * @var int
+     */
+    protected int $faceValue;
 
-        /**
-         * Face value 
-         * @var int 
-         */
-        protected $faceValue;
-
-        /**
-         * A new playing card
-         * @param int $faceValue the face value of the card.
-         * @param Suit $suit the suit of the card.
-         *
-         * @throws \InvalidArgumentException
-         */
-        public function __construct($faceValue, Suit $suit)
-        {
-            if ($this->isValidFaceValue($faceValue)) {
-                $this->faceValue = $faceValue;
-                $this->suit= $suit;
-            } else {
-                throw new \InvalidArgumentException("The face value in not valide: $faceValue");
-            }
+    /**
+     * A new playing card
+     *
+     * @throws InvalidArgumentException
+     */
+    public function __construct(int $faceValue, Suit $suit)
+    {
+        if (!$this->isValidFaceValue($faceValue)) {
+            throw new InvalidArgumentException("The face value is not valid: $faceValue");
         }
 
+        $this->faceValue = $faceValue;
+        $this->suit = $suit;
+    }
 
-    protected function isValidFaceValue($value)
+    protected function isValidFaceValue($value): bool
     {
         if ($value >= 2 && $value <= 10) {
             return true;
@@ -59,97 +57,79 @@ class Card
         return false;
     }
 
-    protected function isFaceCardOrAce($value)
+    protected function isFaceCardOrAce($value): bool
     {
         return (
-                        $value == static::ACE
-                        ||
-                        $value == static::JACK
-                        ||
-                        $value == static::QUEEN
-                        ||
-                        $value == static::KING);
+            $value == self::ACE
+            ||
+            $value == self::JACK
+            ||
+            $value == self::QUEEN
+            ||
+            $value == self::KING);
     }
 
-        /**
-         * Get the Face value of the card
-         *
-         * @return int face value
-         */
-        public function value()
-        {
-            return $this->faceValue;
-        }
+    /**
+     * Get the Face value of the card
+     */
+    public function value(): int
+    {
+        return $this->faceValue;
+    }
 
-        /**
-         * Get the Suit of the card
-         *
-         * @return Suit 
-         */
-        public function suit()
-        {
-            return $this->suit;
-        }
+    /**
+     * Get the Suit of the card
+     */
+    public function suit(): Suit
+    {
+        return $this->suit;
+    }
 
-        /**
-         * Get the suit name the card
-         *
-         * @return string 
-         */
-        public function suitName()
-        {
-            return $this->suit->name();
-        }
+    /**
+     * Get the suit name the card
+     */
+    public function suitName(): string
+    {
+        return $this->suit->name();
+    }
 
-        /*
-         * Is this an Ace
-         *
-         * @return bool
-         */
-        public function isAce()
-        {
-            return $this->faceValue == static::ACE;
-        }
+    /**
+     * Is this an Ace?
+     */
+    public function isAce(): bool
+    {
+        return $this->faceValue === self::ACE;
+    }
 
-        /**
-         * Is this a King 
-         *
-         * @return bool
-         */
-        public function isKing()
-        {
-            return $this->faceValue == static::KING;
-        }
+    /**
+     * Is this a King?
+     */
+    public function isKing(): bool
+    {
+        return $this->faceValue === static::KING;
+    }
 
-        /**
-         * Is this a Queen 
-         *
-         * @return bool
-         */
-        public function isQueen()
-        {
-            return $this->faceValue == static::QUEEN;
-        }
+    /**
+     * Is this a Queen?
+     */
+    public function isQueen(): bool
+    {
+        return $this->faceValue == static::QUEEN;
+    }
 
-        /**
-         * Is this a Jack 
-         *
-         * @return bool
-         */
-        public function isJack()
-        {
-            return $this->faceValue == static::JACK;
-        }
+    /**
+     * Is this a Jack?
+     */
+    public function isJack(): bool
+    {
+        return $this->faceValue == static::JACK;
+    }
 
-        /**
-         * Is Face card. True if the card is King,Queen or Jack 
-         *
-         * @return bool
-         */
-        public function isFaceCard()
-        {
-            $face = $this->isKing() || $this->isQueen() || $this->isJack();
-
-            return $face;
-        }
+    /**
+     * Is Face card? True if the card is King, Queen or Jack
+     */
+    public function isFaceCard(): bool
+    {
+        return $this->isKing() || $this->isQueen() || $this->isJack();
+    }
 }

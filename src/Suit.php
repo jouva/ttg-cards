@@ -1,127 +1,139 @@
 <?php
 
-namespace Fust\Cards;
+namespace Jouva\TTGCards;
+
+use InvalidArgumentException;
 
 /**
  * A suit of cards
  */
 final class Suit
 {
+    const CLUB = 1;
+    const DIAMOND = 2;
+    const HEART = 3;
+    const SPADE = 4;
 
-    const CLUB        = 100;
-    const DIAMOND    = 101;
-    const HEART    = 102;
-    const SPADE    = 103;
-    
+    private int $suit;
+
     /**
-     * The suits the were instatiated. 
-     * Since suits are imutable we save some space
+     * The suits that were instantiated.
+     * Since suits are immutable we save some space
      */
-    private static $suits = array();
+    private static array $suits = [];
 
-    private function __construct($suit)
+    private function __construct(int $suit)
     {
-        $this->suit= $suit;
+        if (!$this->isValidSuit($suit)) {
+            throw new InvalidArgumentException("The suit value is not valid: $suit");
+        }
+
+        $this->suit = $suit;
     }
-    
+
+    private function isValidSuit(int $suit): bool
+    {
+        return $suit ===
+            self::HEART
+            ||
+            self::DIAMOND
+            ||
+            self::HEART
+            ||
+            self::SPADE;
+    }
+
     /**
      * Make a Club suit
-     * 
-     * @param bool $shareable share an instance of the suit
-     * @return Suit
+     *
+     * @param bool $shareable Share an instance of the suit
      */
-    public static function club($shareable = true)
+    public static function club(bool $shareable = true): self
     {
         if (!$shareable) {
-            return new Suit(static::CLUB);
+            return new self(self::CLUB);
         }
 
-        return static::makeSuit(static::CLUB);
+        return self::makeSuit(self::CLUB);
     }
 
     /**
-     * Make a Diamnod suit
-     * 
-     * @param bool $shareable share an instance of the suit
-     * @return Suit
+     * Make a Diamond suit
+     *
+     * @param bool $shareable Share an instance of the suit
      */
-    public static function diamond($shareable = true)
+    public static function diamond(bool $shareable = true): self
     {
         if (!$shareable) {
-            return new Suit(static::DIAMOND);
+            return new self(self::DIAMOND);
         }
 
-        return static::makeSuit(static::DIAMOND);
+        return self::makeSuit(self::DIAMOND);
     }
 
     /**
      * Make a Heart suit
-     * 
-     * @param bool $shareable share an instance of the suit
-     * @return Suit
+     *
+     * @param bool $shareable Share an instance of the suit
      */
-    public static function heart($shareable = true)
+    public static function heart(bool $shareable = true): self
     {
         if (!$shareable) {
-            return new Suit(static::HEART);
+            return new self(self::HEART);
         }
 
-        return static::makeSuit(static::HEART);
+        return self::makeSuit(self::HEART);
     }
 
     /**
      * Make a Spade suit
-     * 
-     * @param bool $shareable share an instance of the suit
-     * @return Suit
+     *
+     * @param bool $shareable Share an instance of the suit
      */
-    public static function spade($shareable = true)
+    public static function spade(bool $shareable = true): self
     {
         if (!$shareable) {
-            return new Suit(static::SPADE);
+            return new self(self::SPADE);
         }
 
-        return static::makeSuit(static::SPADE);
+        return self::makeSuit(self::SPADE);
     }
 
-    
+
     private static function makeSuit($suit)
     {
-        if (array_key_exists($suit, static::$suits)) {
-            //do nothing
-        } else {
-            static::$suits[$suit] = new static($suit);
+        if (!isset(self::$suits[$suit])) {
+            self::$suits[$suit] = new self($suit);
         }
 
-        return static::$suits[$suit];
+        return self::$suits[$suit];
     }
 
     /**
-     * Get the suit unique Id
-     *
-     * @return integer
+     * Get the suit unique id
      */
-    public function value()
+    public function value(): int
     {
         return $this->suit;
     }
 
     /**
-     * Get the suit name 
+     * Get the suit name
      *
-     * @return string 
+     * @return string
      */
-    public function name()
+    public function name(): string
     {
-        switch ($this->suit) {
-                case 100: return 'club';
-                case 101: return 'diamond';
-                case 102: return 'heart';
-                case 103: return 'spade';
-            }
+        return match ($this->suit) {
+            self::CLUB => 'Club',
+            self::DIAMOND => 'Diamond',
+            self::HEART => 'Heart',
+            self::SPADE => 'Spade',
+            default => '',
+        };
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name();
     }

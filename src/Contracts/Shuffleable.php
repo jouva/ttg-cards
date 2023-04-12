@@ -1,18 +1,15 @@
 <?php
 
-namespace Fust\Cards\Contracts;
+namespace Jouva\TTGCards\Contracts;
 
 /**
- * Shuffles the cards for the deck.
+ * For decks to allow for shuffling cards in the deck.
  *
  */
 interface Shuffleable
 {
-     
     /**
-     * Shuffles the deck of cards 
-     *
-     * @return bool  
+     * Shuffles the deck of cards and returns the shuffled deck
      */
-    public function shuffle(array &$cards);
+    public function shuffle(array &$cards): bool;
 }

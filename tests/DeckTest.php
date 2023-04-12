@@ -1,103 +1,93 @@
 <?php
 
-use Mockery as m;
-use Fust\Cards\Deck;
-use Fust\Cards\Contracts\CardProvider;
+use Jouva\TTGCards\Contracts\CardProvider;
+use Jouva\TTGCards\Deck;
 
-class DeckTest extends PHPUnit_Framework_TestCase {
-
-	public function setUp()
-	{
-	}
-
-	protected function tearDown() {
-        \Mockery::close();
+class DeckTest extends PHPUnit\Framework\TestCase
+{
+    protected function tearDown(): void
+    {
+        Mockery::close();
     }
-	
-	public function testDeckCount()
-	{
-		$deck = new Deck;
 
-		$this->assertEquals(52, $deck->count());
-	}
+    public function testDeckCount()
+    {
+        $deck = new Deck;
 
-	public function testDraw()
-	{
-		$deck = new Deck;
-		$c = $deck->draw();
+        $this->assertEquals(52, $deck->count());
+    }
 
-		$this->assertInstanceOf('Fust\Cards\Card', $c);
-		$this->assertEquals(51, $deck->count());
-		$this->assertEquals(1, $deck->countDrawn());
-	}
+    public function testDraw()
+    {
+        $deck = new Deck;
+        $c = $deck->draw();
 
-	/**
-     * @expectedException UnderflowException 
-     */
+        $this->assertInstanceOf('Jouva\TTGCards\Card', $c);
+        $this->assertEquals(51, $deck->count());
+        $this->assertEquals(1, $deck->countDrawn());
+    }
+
     public function testDeckHadNoCardsException()
     {
+        $this->expectException(UnderflowException::class);
 
-		$deck = new Deck(new EmptyCardProvider);
-		$deck->draw();
-	}
+        $deck = new Deck(new EmptyCardProvider);
+        $deck->draw();
+    }
 
-	 public function testDrawHand()
+    public function testDrawHand()
     {
+        $deck = new Deck();
 
-		$deck = new Deck();
+        $h = $deck->drawHand();
+        $this->assertCount(1, $h);
 
-		$h = $deck->drawHand();
-		$this->assertCount(1,$h);
-
-		$hh = $deck->drawHand(10);
-		$this->assertCount(10,$hh);
-
-	}
+        $hh = $deck->drawHand(10);
+        $this->assertCount(10, $hh);
+    }
 
     public function testDrawCard()
     {
+        $deck = new Deck();
 
-		$deck = new Deck();
+        $this->assertCount(52, $deck->getCards());
+        $this->assertCount(0, $deck->getDrawnCards());
+        $deck->draw();
+        $deck->draw();
+        $this->assertCount(50, $deck->getCards());
+        $this->assertCount(2, $deck->getDrawnCards());
+    }
 
-		$this->assertCount(52,$deck->getCards() );
-		$this->assertCount(0,$deck->getDrawnCards() );
-		$deck->draw();
-		$deck->draw();
-		$this->assertCount(50,$deck->getCards() );
-		$this->assertCount(2,$deck->getDrawnCards() );
-	}
-
-	public function testShuffleResets()
+    public function testShuffleResets()
     {
+        $deck = new Deck();
+        $deck->draw();
+        $deck->draw();
+        $this->assertCount(50, $deck->getCards());
+        $this->assertCount(2, $deck->getDrawnCards());
 
-		$deck = new Deck();
-		$deck->draw();
-		$deck->draw();
-		$this->assertCount(50,$deck->getCards() );
-		$this->assertCount(2,$deck->getDrawnCards() );
+        $deck->shuffle();
 
-		$deck->shuffle();
+        $this->assertCount(52, $deck->getCards());
+        $this->assertCount(0, $deck->getDrawnCards());
+    }
 
-		$this->assertCount(52,$deck->getCards() );
-		$this->assertCount(0,$deck->getDrawnCards() );
-	}
-
-	public function testShuffleShuffles()
+    public function testShuffleShuffles()
     {
+        $deck = new Deck();
+        $shuffle = Mockery::mock('Jouva\TTGCards\Contracts\Shuffleable')->shouldReceive('shuffle')->once()->andReturn(true)->getMock();
+        $deck->setShuffler($shuffle);
 
-		$deck = new Deck();
-		$shuffle = m::mock('Fust\Cards\Contracts\Shuffleable')->shouldReceive('shuffle')->once()->andReturn(true)->getMock();
-		$deck->setShuffler($shuffle);
+        $v = $deck->shuffle();
 
-		$v = $deck->shuffle();
-
-		$this->assertTrue($v);
+        $this->assertTrue($v);
     }
 }
 
-class EmptyCardProvider implements CardProvider{
-
-	public function getCards(){
-			return	[];
-	}
+class EmptyCardProvider implements CardProvider
+{
+    public function getCards(): array
+    {
+        return [];
+    }
 }

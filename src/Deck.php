@@ -1,155 +1,140 @@
 <?php
 
-namespace Fust\Cards;
+namespace Jouva\TTGCards;
 
-use Fust\Cards\Contracts\CardProvider;
-use Fust\Cards\Contracts\Shuffleable;
+use Jouva\TTGCards\Contracts\CardProvider;
+use Jouva\TTGCards\Contracts\Shuffleable;
+use UnderflowException;
 
 /**
  * A deck of cards
  */
 class Deck
 {
+    /**
+     * The current cards in the deck
+     */
+    protected array $cards;
 
     /**
-         * The current cards in the deck
-         */
-        protected $cards;
+     * The cards drawn. i.e. not in the deck
+     */
+    protected array $cardsDrawn = [];
 
-        /**
-         * The cards drawn. i.e. not in the deck
-         */
-        protected $cardsDrawn = [];
-
-        /**
-         * The shuffler for the deck 
-         */
-        protected $shuffler = null;
+    /**
+     * The shuffler for the deck
+     */
+    protected Shuffleable|null $shuffler = null;
 
 
-        /**
-         * A new deck of cards. 
-         * By default creates a standard 52 card deck.
-         *
-         * @param CardProvider $provider provider the initial cards for the deck
-         */
-        public function __construct(CardProvider $provider = null)
-        {
-            if (is_null($provider)) {
-                $provider = new StandardDeckProvider;
-            }
-
-            $this->cards = $provider->getCards();
+    /**
+     * A new deck of cards.
+     * By default, creates a standard 52 card deck.
+     *
+     * @param CardProvider|null $provider provider the initial cards for the deck
+     */
+    public function __construct(CardProvider $provider = null)
+    {
+        if (is_null($provider)) {
+            $provider = new StandardDeckProvider;
         }
 
-        /**
-         * Draw a card from the deck
-         *
-         * @return Card
-         *
-         * @throws UnderflowException
-         */
-        public function draw()
-        {
-            if ($this->count() == 0) {
-                throw new \UnderflowException('No more cards in the deck!');
-            }
+        $this->cards = $provider->getCards();
+    }
 
-            $card = array_pop($this->cards);
-            $this->cardsDrawn[] = $card;
-
-            return $card;
+    /**
+     * Draw a card from the deck
+     *
+     * @throws UnderflowException
+     */
+    public function draw(): Card
+    {
+        if ($this->count() === 0) {
+            throw new UnderflowException('No more cards in the deck!');
         }
 
-        /**
-         * Draw a hand of cards from the deck
-         * 
-         * @param integet the number of cards to draw
-         * @return array return array of Card
-         *
-         * @throws UnderflowException
-         */
-        public function drawHand($size = 1)
-        {
-            $hand = [];
+        $card = array_pop($this->cards);
+        $this->cardsDrawn[] = $card;
 
-            for ($i=0; $i<$size; ++$i) {
-                $hand[] = $this->draw();
-            }
+        return $card;
+    }
 
-            return $hand;
+    /**
+     * Draw a hand of cards from the deck
+     *
+     * @throws UnderflowException
+     */
+    public function drawHand($numberOfCardsToDraw = 1): array
+    {
+        $hand = [];
+
+        for ($i = 0; $i < $numberOfCardsToDraw; ++$i) {
+            $hand[] = $this->draw();
         }
 
-        /**
-         * Get the cards in the deck
-         *
-         * @return array array of Cards
-         */
-        public function getCards()
-        {
-            return $this->cards;
+        return $hand;
+    }
+
+    /**
+     * Get the cards in the deck
+     */
+    public function getCards(): array
+    {
+        return $this->cards;
+    }
+
+    /**
+     * Get the cards in the deck
+     */
+
+    public function getDrawnCards(): array
+    {
+        return $this->cardsDrawn;
+    }
+
+    /**
+     * Get the number of cards in the deck
+     */
+    public function count(): int
+    {
+        return count($this->cards);
+    }
+
+    /**
+     * Get the number of cards drawn
+     */
+    public function countDrawn(): int
+    {
+        return count($this->cardsDrawn);
+    }
+
+    /**
+     * Reset the deck (all drawn cards are 'inserted back'), and Shuffles all the cards.
+     */
+    public function shuffle(): bool
+    {
+        if (is_null($this->shuffler)) {
+            $this->setShuffler(new StandardShuffle);
         }
 
-        /**
-         * Get the cards in the deck
-         *
-         * @return array array of Cards
-         */
+        $this->reset();
 
-        public function getDrawnCards()
-        {
-            return $this->cardsDrawn;
-        }
+        return $this->shuffler->shuffle($this->cards);
+    }
 
-        /**
-         * Get the number of cards in the deck
-         *
-         * @return integer
-         */
-        public function count()
-        {
-            return count($this->cards);
-        }
+    /**
+     * Set a new Shuffle algorithm
+     */
+    public function setShuffler(Shuffleable $shuffleable): void
+    {
+        $this->shuffler = $shuffleable;
+    }
 
-        /**
-         * Get the number of cards drawn 
-         *
-         * @return integer
-         */
-        public function countDrawn()
-        {
-            return count($this->cardsDrawn);
-        }
-
-        /**
-         * Reset the deck (all drawn cards are 'inserted back'), and Shuffles all the cards. 
-         *
-         * @return bool shuffle was successful
-         */
-        public function shuffle()
-        {
-            if (is_null($this->shuffler)) {
-                $this->setShuffler(new StandardShuffle);
-            }
-
-            $this->reset();
-
-            return $this->shuffler->shuffle($this->cards);
-        }
-
-        /**
-         * Set a new Shuffle algorithm 
-         */
-        public function setShuffler(Shuffleable $s)
-        {
-            $this->shuffler = $s;
-        }
-
-    protected function reset()
+    protected function reset(): void
     {
         while (count($this->cardsDrawn)) {
             $c = array_pop($this->cardsDrawn);
-            array_push($this->cards, $c);
+            $this->cards[] = $c;
         }
     }
 }

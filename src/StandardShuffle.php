@@ -1,16 +1,15 @@
 <?php
 
-namespace Fust\Cards;
+namespace Jouva\TTGCards;
 
-use Fust\Cards\Contracts\Shuffleable;
+use Jouva\TTGCards\Contracts\Shuffleable;
 
 /**
- * Shuffles an array of cards using php shuffle 
+ * Shuffles an array of cards using PHP shuffle
  */
 class StandardShuffle implements Shuffleable
 {
-    
-    public function shuffle(array &$cards)
+    public function shuffle(array &$cards): bool
     {
         return shuffle($cards);
     }

@@ -1,42 +1,36 @@
 <?php
 
-use Fust\Cards\StandardDeckProvider;
+use Jouva\TTGCards\StandardDeckProvider;
 
-class StandardDeckProviderTest extends PHPUnit_Framework_TestCase {
+class StandardDeckProviderTest extends PHPUnit\Framework\TestCase
+{
+    public function testCardCount()
+    {
+        $provider = new StandardDeckProvider;
 
-	public function setUp()
-	{
-	}
+        $cards = $provider->getCards();
 
-	
-	public function testCardCount()
-	{
-		$provider = new StandardDeckProvider;
+        $this->assertCount(52, $cards);
+    }
 
-		$cards = $provider->getCards();
+    public function testCardsCountInSuit()
+    {
+        $provider = new StandardDeckProvider;
 
-		$this->assertCount(52, $cards);
-	}
+        $cards = $provider->getCards();
 
-	public function testCardsCountInSuit()
-	{
-		$provider = new StandardDeckProvider;
+        $suit['Club'] = 0;
+        $suit['Diamond'] = 0;
+        $suit['Heart'] = 0;
+        $suit['Spade'] = 0;
 
-		$cards = $provider->getCards();
+        foreach ($cards as $c) {
+            ++$suit[$c->suitName()];
+        }
 
-		$suit['club'] = 0;
-		$suit['diamond'] = 0;
-		$suit['heart'] = 0;
-		$suit['spade'] = 0;
-
-		foreach($cards as $c){
-			++$suit[$c->suitName()];	
-		}
-		
-		$this->assertEquals(13, $suit['club']);
-		$this->assertEquals(13, $suit['diamond']);
-		$this->assertEquals(13, $suit['heart']);
-		$this->assertEquals(13, $suit['spade']);
-	}
+        $this->assertEquals(13, $suit['Club']);
+        $this->assertEquals(13, $suit['Diamond']);
+        $this->assertEquals(13, $suit['Heart']);
+        $this->assertEquals(13, $suit['Spade']);
+    }
 }
-
