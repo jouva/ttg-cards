@@ -1,7 +1,8 @@
 <?php
 
 use Jouva\TTGCards\Contracts\CardProvider;
-use Jouva\TTGCards\Deck;
+use Jouva\TTGCards\Decks\StandardDeck;
+use Jouva\TTGCards\Exceptions\ShuffleException;
 
 class DeckTest extends PHPUnit\Framework\TestCase
 {
@@ -12,17 +13,17 @@ class DeckTest extends PHPUnit\Framework\TestCase
 
     public function testDeckCount()
     {
-        $deck = new Deck;
+        $deck = new StandardDeck;
 
         $this->assertEquals(52, $deck->count());
     }
 
     public function testDraw()
     {
-        $deck = new Deck;
+        $deck = new StandardDeck;
         $c = $deck->draw();
 
-        $this->assertInstanceOf('Jouva\TTGCards\Card', $c);
+        $this->assertInstanceOf('Jouva\TTGCards\Cards\Standard\StandardCard', $c);
         $this->assertEquals(51, $deck->count());
         $this->assertEquals(1, $deck->countDrawn());
     }
@@ -31,13 +32,13 @@ class DeckTest extends PHPUnit\Framework\TestCase
     {
         $this->expectException(UnderflowException::class);
 
-        $deck = new Deck(new EmptyCardProvider);
+        $deck = new StandardDeck(new EmptyCardProvider);
         $deck->draw();
     }
 
     public function testDrawHand()
     {
-        $deck = new Deck();
+        $deck = new StandardDeck();
 
         $h = $deck->drawHand();
         $this->assertCount(1, $h);
@@ -48,7 +49,7 @@ class DeckTest extends PHPUnit\Framework\TestCase
 
     public function testDrawCard()
     {
-        $deck = new Deck();
+        $deck = new StandardDeck();
 
         $this->assertCount(52, $deck->getCards());
         $this->assertCount(0, $deck->getDrawnCards());
@@ -58,9 +59,12 @@ class DeckTest extends PHPUnit\Framework\TestCase
         $this->assertCount(2, $deck->getDrawnCards());
     }
 
+    /**
+     * @throws ShuffleException
+     */
     public function testShuffleResets()
     {
-        $deck = new Deck();
+        $deck = new StandardDeck();
         $deck->draw();
         $deck->draw();
         $this->assertCount(50, $deck->getCards());
@@ -68,19 +72,28 @@ class DeckTest extends PHPUnit\Framework\TestCase
 
         $deck->shuffle();
 
+        $this->assertCount(50, $deck->getCards());
+        $this->assertCount(2, $deck->getDrawnCards());
+
+        $deck->reset();
+        $deck->shuffle();
+
         $this->assertCount(52, $deck->getCards());
         $this->assertCount(0, $deck->getDrawnCards());
     }
 
+    /**
+     * @throws ShuffleException
+     */
     public function testShuffleShuffles()
     {
-        $deck = new Deck();
+        $this->expectNotToPerformAssertions();
+
+        $deck = new StandardDeck();
         $shuffle = Mockery::mock('Jouva\TTGCards\Contracts\Shuffleable')->shouldReceive('shuffle')->once()->andReturn(true)->getMock();
         $deck->setShuffler($shuffle);
 
-        $v = $deck->shuffle();
-
-        $this->assertTrue($v);
+        $deck->shuffle();
     }
 }
 

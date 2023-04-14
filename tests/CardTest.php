@@ -1,7 +1,7 @@
 <?php
 
-use Jouva\TTGCards\Card;
-use Jouva\TTGCards\Suit;
+use Jouva\TTGCards\Cards\Standard\StandardCard;
+use Jouva\TTGCards\Cards\Standard\StandardCardSuit;
 
 class CardTest extends PHPUnit\Framework\TestCase
 {
@@ -9,14 +9,14 @@ class CardTest extends PHPUnit\Framework\TestCase
     public function testConstructException()
     {
         $this->expectException(InvalidArgumentException::class);
-        $card = new Card(123, Suit::club());
+        $card = new StandardCard(123, StandardCardSuit::club());
     }
 
     public function testCardSuit()
     {
-        $suit = Suit::club();
+        $suit = StandardCardSuit::club();
 
-        $card = new Card(Card::ACE, $suit);
+        $card = new StandardCard(StandardCard::ACE, $suit);
 
         $this->assertEquals($card->suit()->value(), $suit->value());
         $this->assertEquals($card->suit()->name(), $suit->name());
@@ -25,36 +25,36 @@ class CardTest extends PHPUnit\Framework\TestCase
 
     public function testAceCard()
     {
-        $card = new Card(Card::ACE, Suit::diamond());
+        $card = new StandardCard(StandardCard::ACE, StandardCardSuit::diamond());
         $this->assertTrue($card->isAce());
-        $this->assertEquals(Card::ACE, $card->value());
+        $this->assertEquals(StandardCard::ACE, $card->value());
 
-        // negate the test too
-        $card = new Card(2, Suit::diamond());
+        // Negate the test too
+        $card = new StandardCard(2, StandardCardSuit::diamond());
         $this->assertFalse($card->isAce());
     }
 
     public function testFaceCard()
     {
-        $card = new Card(Card::KING, Suit::diamond());
-        $this->assertTrue($card->isKing());
+        $card = new StandardCard(StandardCard::JACK, StandardCardSuit::diamond());
+        $this->assertTrue($card->isJack());
         $this->assertTrue($card->isFaceCard());
 
-        $card = new Card(Card::QUEEN, Suit::diamond());
+        $card = new StandardCard(StandardCard::QUEEN, StandardCardSuit::diamond());
         $this->assertTrue($card->isQueen());
         $this->assertTrue($card->isFaceCard());
 
-        $card = new Card(Card::JACK, Suit::diamond());
-        $this->assertTrue($card->isJack());
+        $card = new StandardCard(StandardCard::KING, StandardCardSuit::diamond());
+        $this->assertTrue($card->isKing());
         $this->assertTrue($card->isFaceCard());
     }
 
     public function testNotFaceCard()
     {
-        $card = new Card(5, Suit::diamond());
-        $this->assertFalse($card->isKing());
-        $this->assertFalse($card->isQueen());
+        $card = new StandardCard(5, StandardCardSuit::diamond());
         $this->assertFalse($card->isJack());
+        $this->assertFalse($card->isQueen());
+        $this->assertFalse($card->isKing());
         $this->assertFalse($card->isFaceCard());
     }
 }

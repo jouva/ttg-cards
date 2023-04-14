@@ -2,6 +2,8 @@
 
 namespace Jouva\TTGCards\Contracts;
 
+use Jouva\TTGCards\Exceptions\ShuffleException;
+
 /**
  * For decks to allow for shuffling cards in the deck.
  *
@@ -9,7 +11,9 @@ namespace Jouva\TTGCards\Contracts;
 interface Shuffleable
 {
     /**
-     * Shuffles the deck of cards and returns the shuffled deck
+     * Shuffles the deck of cards
+     *
+     * @throws ShuffleException
      */
-    public function shuffle(array &$cards): bool;
+    public function shuffle(array &$cards): void;
 }

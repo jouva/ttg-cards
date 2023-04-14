@@ -1,12 +1,12 @@
 <?php
 
-use Jouva\TTGCards\StandardDeckProvider;
+use Jouva\TTGCards\Cards\Providers\StandardCardProvider;
 
 class StandardDeckProviderTest extends PHPUnit\Framework\TestCase
 {
     public function testCardCount()
     {
-        $provider = new StandardDeckProvider;
+        $provider = new StandardCardProvider;
 
         $cards = $provider->getCards();
 
@@ -15,7 +15,7 @@ class StandardDeckProviderTest extends PHPUnit\Framework\TestCase
 
     public function testCardsCountInSuit()
     {
-        $provider = new StandardDeckProvider;
+        $provider = new StandardCardProvider;
 
         $cards = $provider->getCards();
 

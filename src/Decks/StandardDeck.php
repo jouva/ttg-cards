@@ -1,15 +1,20 @@
 <?php
 
-namespace Jouva\TTGCards;
+namespace Jouva\TTGCards\Decks;
 
+use Jouva\TTGCards\Cards\Providers\StandardCardProvider;
+use Jouva\TTGCards\Cards\Standard\StandardCard;
 use Jouva\TTGCards\Contracts\CardProvider;
+use Jouva\TTGCards\Contracts\Deck as DeckContract;
 use Jouva\TTGCards\Contracts\Shuffleable;
+use Jouva\TTGCards\Exceptions\ShuffleException;
+use Jouva\TTGCards\Shufflers\StandardShuffle;
 use UnderflowException;
 
 /**
  * A deck of cards
  */
-class Deck
+class StandardDeck implements DeckContract
 {
     /**
      * The current cards in the deck
@@ -29,14 +34,14 @@ class Deck
 
     /**
      * A new deck of cards.
-     * By default, creates a standard 52 card deck.
+     * By default, creates a Standard 52-card deck
      *
      * @param CardProvider|null $provider provider the initial cards for the deck
      */
     public function __construct(CardProvider $provider = null)
     {
         if (is_null($provider)) {
-            $provider = new StandardDeckProvider;
+            $provider = new StandardCardProvider;
         }
 
         $this->cards = $provider->getCards();
@@ -47,7 +52,7 @@ class Deck
      *
      * @throws UnderflowException
      */
-    public function draw(): Card
+    public function draw(): StandardCard
     {
         if ($this->count() === 0) {
             throw new UnderflowException('No more cards in the deck!');
@@ -84,9 +89,8 @@ class Deck
     }
 
     /**
-     * Get the cards in the deck
+     * Get the cards drawn from the deck
      */
-
     public function getDrawnCards(): array
     {
         return $this->cardsDrawn;
@@ -109,28 +113,36 @@ class Deck
     }
 
     /**
-     * Reset the deck (all drawn cards are 'inserted back'), and Shuffles all the cards.
+     * Shuffles all cards that have not been drawn. Returns the deck object
+     *
+     * @throws ShuffleException
+     *
+     * @see reset
+     * @see setShuffler
      */
-    public function shuffle(): bool
+    public function shuffle(): self
     {
         if (is_null($this->shuffler)) {
             $this->setShuffler(new StandardShuffle);
         }
 
-        $this->reset();
+        $this->shuffler->shuffle($this->cards);
 
-        return $this->shuffler->shuffle($this->cards);
+        return $this;
     }
 
     /**
-     * Set a new Shuffle algorithm
+     * Set a new Shuffle algorithm.
      */
     public function setShuffler(Shuffleable $shuffleable): void
     {
         $this->shuffler = $shuffleable;
     }
 
-    protected function reset(): void
+    /**
+     * Returns all drawn cards to the deck
+     */
+    public function reset(): void
     {
         while (count($this->cardsDrawn)) {
             $c = array_pop($this->cardsDrawn);

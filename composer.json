@@ -1,6 +1,7 @@
 {
     "name": "jouva/ttg-cards",
     "description": "A library to build Table Top Game-style card decks",
+    "version": "0.2.0",
     "keywords": [
         "cards",
         "table top",

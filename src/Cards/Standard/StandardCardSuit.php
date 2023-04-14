@@ -1,13 +1,13 @@
 <?php
 
-namespace Jouva\TTGCards;
+namespace Jouva\TTGCards\Cards\Standard;
 
 use InvalidArgumentException;
 
 /**
  * A suit of cards
  */
-final class Suit
+final class StandardCardSuit
 {
     const CLUB = 1;
     const DIAMOND = 2;
